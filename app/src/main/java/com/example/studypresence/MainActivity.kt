@@ -2,6 +2,7 @@ package com.example.studypresence
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -110,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @OptIn(ExperimentalGetImage::class)
-    private fun processFrame(imageProxy: ImageProxy, detector: com.google.mlkit.vision.face.FaceDetector) {
+    private fun processFrame(imageProxy: ImageProxy, detector: FaceDetector) {
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
@@ -141,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         leaveTimestamp = time
         mainHandler.post {
             tvStatus.text = "Status: AWAY (On Break)"
-            tvStatus.setTextColor(0xFFFF5252.toInt())
+            tvStatus.setTextColor(Color.parseColor("#FF5252"))
             addLog("Left Desk at: ${timeFormat.format(Date(time))}")
         }
     }
@@ -150,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         isPresent = true
         mainHandler.post {
             tvStatus.text = "Status: STUDYING (Present)"
-            tvStatus.setTextColor(0xFF00E676.toInt())
+            tvStatus.setTextColor(Color.parseColor("#00E676"))
             if (leaveTimestamp > 0) {
                 val breakDurationSec = (time - leaveTimestamp) / 1000
                 addLog("Returned at: ${timeFormat.format(Date(time))} (Break: ${formatDuration(breakDurationSec)})")
@@ -197,7 +199,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
